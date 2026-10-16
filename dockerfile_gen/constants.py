@@ -25,6 +25,9 @@ RUN wget "https://repo.anaconda.com/miniconda/Miniconda3-py310_26.9.3-0-Linux-$(
     && bash miniconda.sh -b -p /opt/miniconda3
 # Add conda to PATH
 ENV PATH=/opt/miniconda3/bin:$PATH
+# Newer installers gate the defaults channels behind Anaconda's Terms of Service;
+# auto-accept so non-interactive builds don't hang. No-op on old installers.
+ENV CONDA_PLUGINS_AUTO_ACCEPT_TOS=yes
 # Add conda to shell startup scripts like .bashrc (DO NOT REMOVE THIS)
 RUN conda init --all
 RUN conda config --append channels conda-forge
