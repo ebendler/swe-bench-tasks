@@ -2,6 +2,7 @@ import importlib.resources as resources
 import json
 import pathlib
 import os
+import platform
 import posixpath
 import re
 from argparse import ArgumentParser
@@ -210,6 +211,11 @@ def make_repo_script_list(specs, repo, base_commit) -> str:
 
 def load_cached_environment_yml(instance_id: str) -> str | None:
     """The environment file kept with the task, else the cache for tasks not yet materialized."""
+    # Cached environments are linux-64 exports: exact build hashes and x86-only
+    # packages (e.g. ld_impl_linux-64) don't exist on other arches, so fall back
+    # to building the env from SPECS and let conda solve for the host platform.
+    if platform.machine() != "x86_64":
+        return None
     from .tasks import TASKS_DIR
 
     task_copy = TASKS_DIR / instance_id / "environment.yml"
